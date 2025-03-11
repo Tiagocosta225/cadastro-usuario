@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import './styles.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
@@ -12,6 +12,13 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// index.tsx
+const Cadastro = () => {
+  // your component logic here
+};
+
+export default Cadastro;
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
