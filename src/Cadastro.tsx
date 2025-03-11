@@ -25,3 +25,5 @@ const Cadastro: React.FC = () => { // Usando React.FC para tipar como componente
 };
 
 export default Cadastro;
+
+
