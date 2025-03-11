@@ -5,7 +5,7 @@ name: Continuos Integration
 
 on:
   push:
-    branch:
+    branches:
       -main
 
 jobs:
