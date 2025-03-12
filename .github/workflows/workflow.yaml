@@ -47,6 +47,12 @@ jobs:
       - name: List files
         run: ls -lh
 
+      - name: Download the artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: release-apk
+          path: app-build.zip
+        
       # Passo 6: Criar uma release no GitHub
       - name: Create GitHub Release
         id: create-release
@@ -67,7 +73,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./
+          asset_path: ./build
           asset_name: app-build.zip
           asset_content_type: application/zip
 
