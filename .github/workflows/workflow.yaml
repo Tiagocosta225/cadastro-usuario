@@ -48,7 +48,7 @@ jobs:
         run: ls -lh
 
       - name: Download the artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: release-apk
           path: app-build.zip
@@ -68,7 +68,7 @@ jobs:
         
       # Passo 7: Fazer upload do artefato para a release
       - name: Upload artifact to release
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
