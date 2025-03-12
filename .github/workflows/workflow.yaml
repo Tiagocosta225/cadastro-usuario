@@ -26,12 +26,6 @@ jobs:
       - name: Build application
         run: npm run build
 
-        - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-build
-          path: ./build
-
       # Passo 5: Armazenar o artefato como release do GitHub
       - name: Zip build directory
         run: |
