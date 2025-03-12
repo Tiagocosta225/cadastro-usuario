@@ -9,10 +9,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write  
-      releases: write  
-
     steps:
       # Passo 1: Checkout do código
       - name: Checkout code
