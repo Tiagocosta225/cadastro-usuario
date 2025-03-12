@@ -47,30 +47,30 @@ jobs:
       - name: List files
         run: ls -lh
 
-      - name: Upload the artifact
-        uses: actions/upload-artifact@v1
+      # Passo 6: Criar uma release no GitHub
+      - name: Create GitHub Release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: my-artifact
-          path: path/to/my/artifact.tar.gz
-
-# ... next job or whenever you need the artifact
-
-      - name: Download the artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: my-artifact
-          path: ./
-
-      - name: Upload the release asset
+          tag_name: v1.0.0-${{ github.sha }})
+          release_name: Release v1.0.0-${{ github.run_id }}
+          body: Automated release for CI/CD pipeline
+          draft: false
+          prerelease: false
+        
+      # Passo 7: Fazer upload do artefato para a release
+      - name: Upload artifact to release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: artifact.tar.gz
-          asset_name: artifact.tar.gz
-          asset_content_type: application/gzip
-        
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ./
+          asset_name: app-build.zip
+          asset_content_type: application/zip
+
   deploy-to-test:
     runs-on: ubuntu-latest
     needs: build-and-test
