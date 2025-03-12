@@ -13,66 +13,72 @@ jobs:
       # Passo 1: Checkout do código
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Using Node.js
+
+      # Passo 2: Configurar Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
 
-      # Passo 2: Instalar dependências
+      # Passo 3: Instalar dependências
       - name: Install dependencies
         run: npm install
 
-      # Passo 3: Executar testes unitários
+      # Passo 4: Executar testes unitários
       - name: Run unit tests
         run: npm test
 
-      # Passo 4: Construir a aplicação
+      # Passo 5: Construir a aplicação
       - name: Build application
         run: npm run build
 
+      # Passo 6: Verificar se o diretório ./build foi criado
       - name: List files after build
         run: ls -lh
 
+      # Passo 7: Compactar o diretório ./build em um arquivo .zip
       - name: Zip build directory
         run: |
           if [ -d "./build" ]; then
             zip -r build.zip ./build
-            chmod 777 build.zip  
+            chmod 644 build.zip  # Permissões seguras
           else
             echo "Error: ./build directory not found!"
-          exit 1
-          fi  
+            exit 1
+          fi
 
-      - name: List files
+      # Passo 8: Verificar se o arquivo build.zip foi criado
+      - name: List files after zip
         run: ls -lh
-        
-      # Passo 6: Criar uma release no GitHub
+
+      # Passo 9: Fazer upload do artefato (build.zip) para o GitHub Actions
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build.zip
+          path: ./build.zip
+
+      # Passo 10: Criar uma release no GitHub
       - name: Create GitHub Release
         id: create-release
         uses: actions/create-release@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.0.0-${{ github.sha }})
+          tag_name: v1.0.0-${{ github.sha }}
           release_name: Release v1.0.0-${{ github.run_id }}
           body: Automated release for CI/CD pipeline
           draft: false
           prerelease: false
 
-      - name: Download the artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build.zip
-          path: ./build
-        
-      # Passo 7: Fazer upload do artefato para a release
+      # Passo 11: Fazer upload do arquivo .zip para a release
       - name: Upload artifact to release
         uses: actions/upload-release-asset@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: ./build
+          asset_path: ./build.zip  # Upload do arquivo .zip
           asset_name: app-build.zip
           asset_content_type: application/zip
 
@@ -81,10 +87,18 @@ jobs:
     needs: build-and-test
     environment: test-environment
     steps:
-      # Passo 8: Fazer deploy no ambiente de teste
+      # Passo 12: Fazer deploy no ambiente de teste
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Passo 13: Baixar o artefato (build.zip)
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build.zip
+          path: ./build
+
+      # Passo 14: Fazer deploy no ambiente de teste
       - name: Deploy to Test Environment
         run: echo "Deploying to test environment..."
         # Aqui você pode adicionar os comandos específicos para fazer o deploy
@@ -95,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-and-test, deploy-to-test]
     steps:
-      # Passo 9: Notificar o desenvolvedor por e-mail em caso de falha
+      # Passo 15: Notificar o desenvolvedor por e-mail em caso de falha
       - name: Send failure email notification
         run: |
           curl -X POST \
