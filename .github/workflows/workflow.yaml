@@ -29,6 +29,9 @@ jobs:
       - name: Compactar diretório build
         run: zip -r app-build.zip ./build/
 
+      - name: List files
+        run: ls -lh
+
       # Passo 6: Criar uma release no GitHub
       - name: Create GitHub Release
         id: create-release
