@@ -26,10 +26,17 @@ jobs:
       - name: Build application
         run: npm run build
 
-      # Passo 5: Armazenar o artefato como release do GitHub
-      - name: Zip build directory
-        run: |
-          zip -r build.zip ./build
+      - name: Compactar diretório build
+        run: zip -r app-build.zip ./build
+
+      - name: Upload do artefato para o release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./app-build.zip  # Agora é um arquivo ZIP
+          asset_name: app-build.zip
+          asset_content_type: application/zip
+
 
       # Passo 6: Criar uma release no GitHub
       - name: Create GitHub Release
