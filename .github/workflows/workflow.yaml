@@ -50,8 +50,8 @@ jobs:
       - name: Download the artifact
         uses: actions/download-artifact@v4
         with:
-          name: release-apk
-          path: app-build.zip
+          name: Build.zip
+          path: ./build
         
       # Passo 6: Criar uma release no GitHub
       - name: Create GitHub Release
