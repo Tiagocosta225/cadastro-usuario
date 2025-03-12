@@ -15,7 +15,7 @@ jobs:
       - name: Using Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 22.
+          node-version: 22.x
       
       - name: run install, build and test
         run: |
@@ -30,7 +30,7 @@ jobs:
           path: ./build
 
       - name: Deploy to Test Enviroment
-        uses: test-deploy-action
+        uses: owner/repo@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
         if: ${{success() }}
