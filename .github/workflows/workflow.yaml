@@ -27,11 +27,9 @@ jobs:
         run: npm run build
 
       # Passo 5: Armazenar o artefato como release do GitHub
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-build
-          path: ./build
+      - name: Zip build directory
+        run: |
+          zip -r build.zip ./build
 
       # Passo 6: Criar uma release no GitHub
       - name: Create GitHub Release
