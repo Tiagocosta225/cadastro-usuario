@@ -1,44 +1,85 @@
-name: Continuos Integration
-
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      -main
+      - main
 
 jobs:
-  continuos-integration:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4.2.2
-      - name: Using Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 22.x
-      
-      - name: run install, build and test
-        run: |
-          npm install
-          npm run test
-          npm run build
-          
+      # Passo 1: Checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Passo 2: Instalar dependências
+      - name: Install dependencies
+        run: npm install
+
+      # Passo 3: Executar testes unitários
+      - name: Run unit tests
+        run: npm test
+
+      # Passo 4: Construir a aplicação
+      - name: Build application
+        run: npm run build
+
+      # Passo 5: Armazenar o artefato como release do GitHub
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@v4
         with:
           name: app-build
           path: ./build
 
-      - name: Deploy to Test Enviroment
-        uses: owner/repo@v1
+      # Passo 6: Criar uma release no GitHub
+      - name: Create GitHub Release
+        id: create-release
+        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
-        if: ${{success() }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v1.0.0-${{ github.run_id }}
+          release_name: Release v1.0.0-${{ github.run_id }}
+          body: Automated release for CI/CD pipeline
+          draft: false
+          prerelease: false
 
+      # Passo 7: Fazer upload do artefato para a release
+      - name: Upload artifact to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ./build
+          asset_name: app-build.zip
+          asset_content_type: application/zip
+
+  deploy-to-test:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    environment: test-environment
+    steps:
+      # Passo 8: Fazer deploy no ambiente de teste
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Test Environment
+        run: echo "Deploying to test environment..."
+        # Aqui você pode adicionar os comandos específicos para fazer o deploy
+        # Exemplo: usar `scp`, `rsync`, ou uma ação específica de deploy (como para AWS, Heroku, etc.)
+
+  notify-on-failure:
+    if: failure()
+    runs-on: ubuntu-latest
+    needs: [build-and-test, deploy-to-test]
+    steps:
+      # Passo 9: Notificar o desenvolvedor por e-mail em caso de falha
       - name: Send failure email notification
         run: |
-           curl -X POST \
+          curl -X POST \
             -H "Content-Type: application/json" \
             -d '{"to":"tiagocosta225@gmail.com", "subject":"CI/CD Pipeline Failed", "body":"Your CI/CD pipeline has failed. Please check the logs for more information."}' \
-            https://api.sendgrid.com/v3/mail/send  
-        if: failure()
+            https://api.sendgrid.com/v3/mail/send  # Substitua pelo serviço de e-mail de sua escolha
