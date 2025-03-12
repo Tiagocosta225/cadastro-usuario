@@ -34,8 +34,15 @@ jobs:
       - name: List files after build
         run: ls -lh
 
-      - name: Compactar diretório build
-        run: zip -r app-build.zip ./build/
+      - name: Zip build directory
+        run: |
+          if [ -d "./build" ]; then
+            zip -r build.zip ./build
+            chmod 644 build.zip  
+          else
+            echo "Error: ./build directory not found!"
+          exit 1
+          fi  
 
       - name: List files
         run: ls -lh
