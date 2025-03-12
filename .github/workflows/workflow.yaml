@@ -40,5 +40,5 @@ jobs:
            curl -X POST \
             -H "Content-Type: application/json" \
             -d '{"to":"tiagocosta225@gmail.com", "subject":"CI/CD Pipeline Failed", "body":"Your CI/CD pipeline has failed. Please check the logs for more information."}' \
-            https://api.sendgrid.com/v3/mail/send  # Substitua pelo serviço de e-mail de sua escolha
+            https://api.sendgrid.com/v3/mail/send  
         if: failure()
