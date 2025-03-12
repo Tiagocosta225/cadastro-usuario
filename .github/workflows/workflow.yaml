@@ -26,6 +26,9 @@ jobs:
       - name: Build application
         run: npm run build
 
+      - name: List files after build
+        run: ls -lh
+
       - name: Compactar diretório build
         run: zip -r app-build.zip ./build/
 
