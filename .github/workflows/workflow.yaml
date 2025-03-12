@@ -58,6 +58,12 @@ jobs:
           body: Automated release for CI/CD pipeline
           draft: false
           prerelease: false
+
+      - name: Download the artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: build.zip
+          path: ./build
         
       # Passo 7: Fazer upload do artefato para a release
       - name: Upload artifact to release
