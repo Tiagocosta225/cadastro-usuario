@@ -38,7 +38,7 @@ jobs:
         run: |
           if [ -d "./build" ]; then
             zip -r build.zip ./build
-            chmod 644 build.zip  
+            chmod 777 build.zip  
           else
             echo "Error: ./build directory not found!"
           exit 1
